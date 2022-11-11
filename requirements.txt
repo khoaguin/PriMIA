@@ -30,3 +30,5 @@ wsaccel ==0.6.2
 papermill ==2.0.0
 bcrypt ==3.2.0
 #syft==0.2.9
+# rich ==12.6.0
+# jupyter ==1.0.0
