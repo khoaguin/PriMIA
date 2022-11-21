@@ -158,3 +158,4 @@ figure_scripts/*.csv
 
 # others
 **scratch**
+nohup.out

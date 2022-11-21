@@ -13,6 +13,8 @@ from torchlib.dataloader import (
     CombinedLoader,
 )
 from torchlib.models import resnet18
+import time
+from collections import Counter
 
 print(f'\ntorch=={torch.__version__}')
 print(f'syft is locate at {sy.__file__}')
@@ -21,6 +23,7 @@ PROJECT_PATH = Path(__file__).resolve().parent
 print(f'project path = {PROJECT_PATH}\n')
 WEIGHT_PATH = PROJECT_PATH / 'model_weights' / 'final_federated_dataserver_simulation_2022-11-08_22-15-14.pt'
 
+tick = time.time()
 cmd_args = {}
 cmd_args["http_protocol"] = True
 
@@ -28,6 +31,7 @@ use_cuda = torch.cuda.is_available()
 device = torch.device(
     "cuda" if use_cuda else "cpu"
 )
+print(f'device = {device}\n')
 state = torch.load(WEIGHT_PATH, map_location=device)
 
 hook = sy.TorchHook(torch)
@@ -155,7 +159,18 @@ with torch.no_grad():
         output = model(data)
         output = output.get().float_prec()
         pred = output.argmax(dim=1)
+        total_pred.append(pred.detach().cpu().item())
+        ## should be unneccessary but somehow required
+        if len(dataset) == i + 1:
+            break
 
-        debug = 1
+pred_dict = {"Inference Results": dict(enumerate(total_pred))}
+print(pred_dict)
+print("\n{:s}".format(str(Counter(total_pred))))
+
+tock = time.time()
+print()
+print(f"Took {tock-tick: .2f} seconds.")
+
 
 debug = 1
